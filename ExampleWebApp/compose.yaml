@@ -1,0 +1,75 @@
+﻿services:
+  mqttworkerservice:
+    image: mqttworkerservice
+    build:
+      context: .
+      dockerfile: MqttWorkerService/Dockerfile
+    depends_on:
+     # - mosquitto
+      - db
+    environment:
+      - MQTT__HOST=mosquitto
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=exampledb
+      - GREENGRASS_DEVICE_NAME=MyGreengrassCore  
+        #- POSTGRES_USER=exampleuser
+       # - POSTGRES_PASSWORD=examplepass
+    ports:
+      - "1883:1883"
+    networks:
+      - backend 
+        
+  webui:
+    image: webui
+    build:
+      context: .
+      dockerfile: WebUI/Dockerfile
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=exampledb
+      - ASPNETCORE_URLS=http://0.0.0.0:5286 
+      - ASPNETCORE_ENVIRONMENT=Development
+       #- POSTGRES_USER=exampleuser
+       # - POSTGRES_PASSWORD=examplepass
+    ports:
+      - "5286:5286"
+    networks:
+      - backend
+      
+        
+#  mosquitto:
+#    image: eclipse-mosquitto
+#    volumes:
+#      - ./MqttWorkerService/mosquitto.conf:/mosquitto/config/mosquitto.conf
+#    ports:
+#      - "1884:1883"
+#    networks:
+#      - backend
+  
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_INITDB_WELCOME="app"
+      - POSTGRES_DB=exampledb
+     # - POSTGRES_USER=exampleuser
+     # - POSTGRES_PASSWORD=examplepass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+    name: pgdata
+    driver: local
+
+networks:
+  backend:
+    driver: bridge

@@ -1,0 +1,55 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: "rfid.Web"
+ComponentVersion: "1.0.0"
+ComponentDescription: Test app (with Flask-Socket.io, and React)
+ComponentPublisher: Amazon
+ComponentDependencies:
+  aws.greengrass.Nucleus:
+    VersionRequirement: ">=2.4.0"
+ComponentConfiguration:
+  DefaultConfiguration:
+    accessControl:
+      aws.greengrass.ipc.mqttproxy:
+        "rfid.Web:pub:0":
+          policyDescription: Allows access to publish to IoT Core topic(s).
+          operations:
+            - aws.greengrass#PublishToIoTCore
+          resources:
+            - "*"
+        "rfid.Web:sub:0":
+          policyDescription: Allows access to subscribe to IoT Core topic(s).
+          operations:
+            - aws.greengrass#SubscribeToIoTCore
+          resources:
+            - "*"
+      aws.greengrass.ipc.pubsub:
+        "rfid.Web:pub:1":
+          policyDescription: Allows access to publish to local topics.
+          operations:
+            - aws.greengrass#PublishToTopic
+          resources:
+            - "*"
+        "rfid.Web:sub:1":
+          policyDescription: Allows access to subscribe to local topics.
+          operations:
+            - aws.greengrass#SubscribeToTopic
+          resources:
+            - "*"
+Manifests:
+  - Platform:
+      os: linux
+    Lifecycle:
+      Install:
+        RequiresPrivilege: true
+        Script: |
+          docker load -i {artifacts:decompressedPath}/rfid.Web/custom-build/rfid.Web/react-webapp.tar && docker load -i {artifacts:decompressedPath}/rfid.Web/custom-build/rfid.Web/flask-app.tar
+      Run:
+        RequiresPrivilege: true
+        Script: |
+          mkdir -p /home/ggc_user/greengrass_data
+          chmod 777 /home/ggc_user/greengrass_data
+          docker compose -f {artifacts:decompressedPath}/rfid.Web/custom-build/rfid.Web/docker-compose.yaml up --no-build
+    Artifacts:
+      - URI: s3://BUCKET_NAME/COMPONENT_NAME/COMPONENT_VERSION/rfid.Web.zip
+        Unarchive: ZIP

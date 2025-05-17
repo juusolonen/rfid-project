@@ -1,0 +1,92 @@
+@page "{id:guid}"
+@model WebUI.Pages.Tools.DetailsModel
+@{
+    ViewData["Title"] = "Tool Details";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Työkalu: @Model.Tool.Name</h1>
+    </div>
+
+    @if (Model.Tool == null)
+    {
+        <div class="alert alert-danger">Työkalua ei löydy.</div>
+    }
+    else
+    {
+        <!-- User Info Section -->
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered table-striped table-hover text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th colspan="2" class="text-center">Tiedot</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>Työkalun tunniste</strong></td>
+                    <td>@Model.Tool.TagIdentifier</td>
+                </tr>
+                <tr>
+                    <td><strong>Nimi</strong></td>
+                    <td>@Model.Tool.Name</td>
+                </tr>
+                <tr>
+                    <td><strong>Poistettu</strong></td>
+                    <td>@(Model.Tool.Deleted ? "Kyllä" : "Ei")</td>
+                </tr>
+                <tr>
+                    <td><strong>Poistopvm</strong></td>
+                    <td>@(Model.Tool.DeletedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div>
+            <h3 class="mb-3">Työkalun tapahtumat</h3>
+            @if (Model.TargetedEvents?.Any() == true)
+            {
+                <table class="table table-bordered table-striped table-hover text-center align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Käsitelty</th>
+                        <th>Pvm</th>
+                        <th>Lähde</th>
+                        <th>Häiriö</th>
+                        <th>Häiriön syy</th>
+                        <th>Työkalut</th>
+                        <th>Tapahtumatyyppi</th>
+                        <th>Kohde tägi</th>
+                        <th>Kohde tägit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.TargetedEvents != null)
+                    {
+                        foreach (var eventItem in Model.TargetedEvents)
+                        {
+                            <tr>
+                                <td>@(eventItem.Processed ? "✅" : "🛑")</td>
+                                <td>@eventItem.ReceivedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@eventItem.ProcessedData.InitiatorName/@eventItem.ProcessedData.InitiatorTagEPC</td>
+                                <td>@(eventItem.Faulted ? "Kyllä" : "Ei")</td>
+                                <td>@(eventItem.Faulted ? eventItem.FaultReason : "-")</td>
+                                <td>@(Model.GetToolNames(eventItem.Tools) ?? "-")</td>
+                                <td>@eventItem.ProcessedData.Action</td>
+                                <td>@eventItem.ProcessedData.Tag</td>
+                                <td>@(string.Join(",", eventItem.ProcessedData.TagNames.ToArray()) ?? "-")</td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>Ei tapahtuma.</p>
+            }
+        </div>
+    }
+</div>

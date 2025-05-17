@@ -1,0 +1,22 @@
+{
+  "component": {
+    "rfid.Web": {
+      "author": "Juuso",
+      "version": "1.0.0",
+      "build": {
+        "build_system": "custom",
+        "custom_build_command": [
+          "bash",
+          "build-custom.sh",
+          "rfid.Web",
+          "1.0.0"
+        ]
+      },
+      "publish": {
+        "bucket": "rfid-projekti",
+        "region": "eu-west-1"
+      }
+    }
+  },
+  "gdk_version": "1.0.0"
+}

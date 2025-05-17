@@ -1,0 +1,72 @@
+﻿@page
+@model WebUI.Pages.Tools.ToolsModel
+@{
+    ViewData["Title"] = "Työkalut";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Työkalut</h1>
+    </div>
+
+    <div class="table-responsive">
+        <h2>Aktiiviset</h2>
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nimi</th>
+                <th>Paikka</th>
+                <th>Paikalla</th>
+                <th>Viimeisin lainaaja</th>
+                <th>Lainauspvm</th>
+                <th>Palautuspvm</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var tool in Model.ActiveTools)
+            {
+                <tr>
+                    <td><strong>@tool.TagIdentifier</strong></td>
+                    <td>@tool.Name</td>
+                    <td>@tool.Slot</td>
+                    <td>@(tool.In == true ? "✅" : "🛑")</td>
+                    <td>@(!string.IsNullOrWhiteSpace(tool.LastBorrower) ? tool.LastBorrower : "-")</td>
+                    <td>@(tool.BorrowedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                    <td>@(tool.ReturnedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Page("/Tools/Details", new { id = tool.Id })">Katso</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive">
+        <h2>Poistetut</h2>
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nimi</th>
+                <th>Paikka</th>
+                <th>Poistopvm</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var tool in Model.DeletedTools)
+            {
+                <tr>
+                    <td><strong>@tool.TagIdentifier</strong></td>
+                    <td>@tool.Name</td>
+                    <td>@tool.Slot</td>
+                    <td>@(tool.DeletedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    
+</div>

@@ -1,0 +1,40 @@
+@page
+@model WebUI.Pages.Users.UsersModel
+@{
+    ViewData["Title"] = "Käyttäjät";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Käyttäjät</h1>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Tunnisteen Id</th>
+                <th>Nimi</th>
+                <th>Poistettu</th>
+                <th>Poistopvm</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model.SystemUsers)
+            {
+                <tr>
+                    <td><strong>@user.TagIdentifier</strong></td>
+                    <td>@user.Username</td>
+                    <td>@(user.Deleted == true ? "✅" : "")</td>
+                    <td>@(user.DeletedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Page("/Users/Details", new { id = user.Id })">Katso</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+</div>

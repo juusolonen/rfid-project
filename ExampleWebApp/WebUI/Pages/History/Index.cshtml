@@ -1,0 +1,78 @@
+﻿@page
+@model WebUI.Pages.History.HistoryModel
+@{
+    ViewData["Title"] = "Tapahtumat";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Tapahtumat</h1>
+    </div>
+
+    <div class="table-responsive">
+        <h2>Käsitellyt</h2>
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Pvm</th>
+                <th>Tyyppi</th>
+                <th>Käyttäjä</th>
+                <th>Käyttäjän tunniste</th>
+                <th>Tägi</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var processedEvent in Model.ProcessedEvents)
+            {
+                <tr>
+                    <td><strong>@(processedEvent.ReceivedAt.ToString("dd.MM.yyyy HH:mm") ?? "-")</strong></td>
+                    <td>@processedEvent.ProcessedData.Action</td>
+                    <td>@processedEvent.ProcessedData.InitiatorName</td>
+                    <td>@processedEvent.ProcessedData.InitiatorSystemId</td>
+                    <td>@(!string.IsNullOrWhiteSpace(processedEvent.ProcessedData.Tag) ? processedEvent.ProcessedData.Tag : "-")</td>
+                    <td>@string.Join(",", processedEvent.ProcessedData.TagNames?.ToArray() ?? Array.Empty<string>())</td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Page("/History/Details", new { id = processedEvent.Id })">Katso</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    
+
+
+        <div class="table-responsive">
+        <h2>Vialliset</h2>
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Pvm</th>
+                <th>Tyyppi</th>
+                <th>Syy</th>
+                <th>Käyttäjä</th>
+                <th>Käyttäjän tunniste</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var processedEvent in Model.FaultedEvents)
+            {
+                <tr>
+                    <td><strong>@(processedEvent.ReceivedAt.ToString("dd.MM.yyyy HH:mm") ?? "-")</strong></td>
+                    <td>@(processedEvent.Data?.RootElement.TryGetProperty("action", out var action) == true ? action.GetString() : "-")</td>
+                    <td>@processedEvent.FaultReason</td>
+                    <td>@(processedEvent.Caller?.Username ?? "-")</td>
+                    <td>@(processedEvent.Caller?.TagIdentifier)</td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Page("/History/Details", new { id = processedEvent.Id })">Katso</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+</div>

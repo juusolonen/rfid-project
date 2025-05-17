@@ -1,0 +1,98 @@
+@page "{id:guid}"
+@using Database.Entities
+@model WebUI.Pages.History.DetailsModel
+@{
+    ViewData["Title"] = "Tapahtuman tiedot";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Tapahtuma: @Model.HistoryEvent?.ReceivedAt.ToString("dd.MM.yyyy HH:mm")</h1>
+    </div>
+
+    @if (Model.HistoryEvent == null)
+    {
+        <div class="alert alert-danger">Tapahtumaa ei löydy.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered table-striped table-hover text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th colspan="2" class="text-center">Tapahtuman tiedot</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>Vastaanotettu</strong></td>
+                    <td>@Model.HistoryEvent.ReceivedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                </tr>
+                <tr>
+                    <td><strong>Toiminto</strong></td>
+                    <td>@(Model.HistoryEvent.Data?.RootElement.TryGetProperty("action", out var action) == true ? action.GetString() : "-")</td>
+                </tr>
+                <tr>
+                    <td><strong>Käsitelty</strong></td>
+                    <td>@(Model.HistoryEvent.Processed ? "✅ Kyllä" : "🛑 Ei")</td>
+                </tr>
+                <tr>
+                    <td><strong>Häiriö</strong></td>
+                    <td>@(Model.HistoryEvent.Faulted ? "Kyllä - " + Model.HistoryEvent.FaultReason : "Ei")</td>
+                </tr>
+                <tr>
+                    <td><strong>Kutsuja</strong></td>
+                    <td>@(Model.Caller?.Username ?? "-") @(Model.Caller?.TagIdentifier)</td>
+                </tr>
+                <tr>
+                    <td><strong>Kohde</strong></td>
+                    <td>@(Model.TargetUser?.Username ?? "-") @(Model.TargetUser?.TagIdentifier)</td>
+                </tr>
+                <tr>
+                    <td><strong>Työkalut</strong></td>
+                    <td>@(Model.GetToolNames(Model.Tools) ?? "-")</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.HistoryEvent is ProcessedEventDbEntity processedEvent)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover text-center align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th colspan="2" class="text-center">Lisätiedot</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>Käsittelyaika</strong></td>
+                        <td>@processedEvent.ProcessedData?.ProcessedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Toiminnon aloittaja</strong></td>
+                        <td>@(processedEvent.ProcessedData?.InitiatorName ?? "-") @(processedEvent.ProcessedData?.InitiatorTagEPC)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Järjestelmä ID</strong></td>
+                        <td>@processedEvent.ProcessedData?.InitiatorSystemId</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Toiminto</strong></td>
+                        <td>@(processedEvent.ProcessedData?.Action ?? "-")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tägi</strong></td>
+                        <td>@(processedEvent.ProcessedData?.Tag ?? "-")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tägit</strong></td>
+                        <td>@(string.Join(", ", processedEvent.ProcessedData?.TagNames ?? []) ?? "-")</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

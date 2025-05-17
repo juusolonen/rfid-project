@@ -1,0 +1,92 @@
+.App {
+  text-align: left;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  background: red !important;
+}
+
+.layoutDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 333px;
+}
+
+.red-x {
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.contentDiv {
+  color: #ABB2BF;
+  width: 60vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-logout {
+  text-align: right;
+}
+
+.socket-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  z-index:1000;
+}
+
+.App-header {
+  background-color: #282c34;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #fff;
+  min-width: 100%;
+}
+
+ul {
+  text-align: center;
+}
+
+a {
+  color: #61dafb;
+  text-decoration: none;
+}
+
+.disabled-row {
+  opacity: 0.5;
+  background-color: #f0f0f0;
+  color: #888;
+  text-decoration: line-through red solid 2px;
+}
+
+.table-striped > tbody > tr.outgoing-row > td,
+.table-striped > tbody > tr.outgoing-row > th {
+  --bs-table-accent-bg: #5b837b;
+  background-color: var(--bs-table-accent-bg);
+}
+
+.table-striped > tbody > tr.incoming-row > td,
+.table-striped > tbody > tr.incoming-row > th {
+  --bs-table-accent-bg: #a39c5f;
+  background-color: var(--bs-table-accent-bg);
+}
+
+sub {
+  vertical-align: sub;
+  font-size: smaller;
+}
+
+td, th {
+  text-align: center;
+}
